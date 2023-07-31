@@ -1,10 +1,7 @@
 import styled, { keyframes } from 'styled-components';
 
-const Wrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+const Title = styled.h1`
+  color: ${(props) => props.theme.textColor};
 `;
 
 const animation = keyframes`
@@ -21,33 +18,24 @@ const animation = keyframes`
   }
 `;
 
-const Emoji = styled.span`
-  font-size: 36px;
-`;
-
-const Box = styled.div`
-  height: 200px;
-  width: 200px;
-  background-color: tomato;
+const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  animation: ${animation} 1s linear infinite;
-  ${Emoji} {
+  height: 100vh;
+  ${Title} {
     &:hover {
-      font-size: 100px;
+      animation: ${animation} 1s linear infinite;
     }
     transition: all 0.4s;
   }
+  background-color: ${(props) => props.theme.backgroundColor};
 `;
 
 function App() {
   return (
     <Wrapper>
-      <Box>
-        <Emoji as='p'>🤩</Emoji>
-      </Box>
-      <Emoji>😈</Emoji>
+      <Title>Hello</Title>
     </Wrapper>
   );
 }
