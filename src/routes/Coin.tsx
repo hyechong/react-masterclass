@@ -108,12 +108,14 @@ const Coin = () => {
       console.log(infoData);
       console.log(priceData);
     })();
-  }, []);
+  }, [coinId]);
 
   return (
     <Container>
       <Header>
-        <Title>{state?.name || 'Loading..'}</Title>
+        <Title>
+          {state?.name ? state.name : isLoading ? 'Loading..' : info?.name}
+        </Title>
       </Header>
       {isLoading ? (
         <Loader>Loading...</Loader>
