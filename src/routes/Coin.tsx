@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
 import { useLocation, useParams } from 'react-router';
 import { styled } from 'styled-components';
+import { fetchCoinInfo, fetchCoinTickers } from '../api';
 
 const Container = styled.div`
   padding: 0px 20px;
@@ -89,40 +91,50 @@ interface PriceData {
 }
 
 const Coin = () => {
-  const [isLoading, setLoading] = useState(true);
   const { coinId } = useParams();
   const { state } = useLocation() as ILocation;
-  const [info, setInfo] = useState<InfoData>();
-  const [priceInfo, setPriceInfo] = useState<PriceData>();
-  useEffect(() => {
-    (async () => {
-      const infoData = await (
-        await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
-      ).json();
-      const priceData = await (
-        await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
-      ).json();
-      setInfo(infoData);
-      setPriceInfo(priceData);
-      setLoading(false);
-      console.log(infoData);
-      console.log(priceData);
-    })();
-  }, [coinId]);
+  // const [isLoading, setLoading] = useState(true);
+  // const [info, setInfo] = useState<InfoData>();
+  // const [priceInfo, setPriceInfo] = useState<PriceData>();
+  // useEffect(() => {
+  //   (async () => {
+  //     const infoData = await (
+  //       await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
+  //     ).json();
+  //     const priceData = await (
+  //       await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
+  //     ).json();
+  //     setInfo(infoData);
+  //     setPriceInfo(priceData);
+  //     setLoading(false);
+  //     console.log(infoData);
+  //     console.log(priceData);
+  //   })();
+  // }, [coinId]);
 
+  const { isLoading: infoLoading, data: infoData } = useQuery(
+    ['info', coinId],
+    () => fetchCoinInfo(coinId!)
+  );
+  const { isLoading: tickersLoading, data: tickersData } = useQuery(
+    ['tickers', coinId],
+    () => fetchCoinTickers(coinId!)
+  );
+
+  const isLoading = infoLoading || tickersLoading;
   return (
     <Container>
       <Header>
         <Title>
-          {state?.name ? state.name : isLoading ? 'Loading..' : info?.name}
+          {state?.name ? state.name : isLoading ? 'Loading..' : infoData?.name}
         </Title>
       </Header>
       {isLoading ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
-          <span>{info?.description}</span>
-          <h2>{priceInfo?.quotes.USD.ath_price}</h2>
+          <span>{infoData?.description}</span>
+          <h2>{tickersData?.quotes.USD.ath_price}</h2>
         </>
       )}
     </Container>
